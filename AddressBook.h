@@ -8,11 +8,19 @@
 class AddressBook {
 private:
     std::vector<Contact> contacts_;
+    static const std::string DEFAULT_FILENAME;
+
+    // Private helper methods
+    Contact* FindContactById(int contactId);
+    const Contact* FindContactById(int contactId) const;
+    static bool ContainsCaseInsensitive(const std::string& str, const std::string& substr);
 
 public:
     // Basic CRUD operations
     void AddContact();
+    void AddContact(const Contact& contact);
     bool EditContact(int contactId);
+    bool EditContact(int contactId, const Contact& updatedContact);
     bool DeleteContact(int contactId);
 
     // View operations
@@ -20,14 +28,14 @@ public:
     bool ViewContact(int contactId) const;
 
     // Search operations
-    void SearchByName(const std::string& query) const;
-    void SearchByEmail(const std::string& query) const;
-    void SearchByPhone(const std::string& query) const;
+    std::vector<Contact> SearchByName(const std::string& nameQuery) const;
+    std::vector<Contact> SearchByEmail(const std::string& emailQuery) const;
+    std::vector<Contact> SearchByPhone(const std::string& phoneQuery) const;
 
     // Filter operations
-    void FilterByType(const std::string& type) const;
-    void FilterByCity(const std::string& city) const;
-    void FilterByTag(const std::string& tag) const;
+    std::vector<Contact> FilterByType(const std::string& type) const;
+    std::vector<Contact> FilterByCity(const std::string& city) const;
+    std::vector<Contact> FilterByTag(const std::string& tag) const;
 
     // Tag/Group operations
     bool AddTag(int contactId, const std::string& tag);
@@ -44,7 +52,6 @@ public:
     void ReportCountsByType() const;
     void ReportGroupSummary() const;
 
-private:
     // Helper method used by search methods
     void DisplaySearchResults(const std::vector<Contact>& results, const std::string& searchType) const;
 };

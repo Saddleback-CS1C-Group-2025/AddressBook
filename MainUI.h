@@ -2,7 +2,7 @@
 #define MAIN_UI_H
 
 #include <string>
-#include "AddressBookTG.h"
+#include "AddressBook.h"
 
 using std::string;
 

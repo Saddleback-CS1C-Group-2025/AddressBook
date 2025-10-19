@@ -1,4 +1,4 @@
-#include "AddressBookTG.h"
+#include "AddressBook.h"
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -6,44 +6,44 @@
 #include <cctype>
 #include <map>
 
+//============================= CONSTANTS ====================================
+const std::string AddressBook::DEFAULT_FILENAME = "addressbook.csv";
+
 //============================= HELPER FUNCTIONS ====================================
 
-// Helpers are in an anonymous namespace to prevent clashes
-namespace {
-    //  Data Processing: Converts user input IDs to the class's ID getter function.
-    Contact* FindContactById(std::vector<Contact>& contacts, int contactId) {
-        for (auto & contact : contacts) {
-            if (contact.getId() == contactId) {
-                return &contact;
-            }
+//helper point3r
+Contact* AddressBook::FindContactById(int contactId) {
+    for (auto& contact : contacts_) {
+        if (contact.getId() == contactId) {
+            return &contact;
         }
-        return nullptr;
     }
-    //  Overload for const
-    const Contact* FindContactById(const std::vector<Contact>& contacts, int contactId) {
-        for (const auto & contact : contacts) {
-            if (contact.getId() == contactId) {
-                return &contact;
-            }
-        }
-        return nullptr;
-    }
+    return nullptr;
+}
 
-    //  Input Handling: Enables smarter searching by converting uppercase characters in an input string
-    //  to lowercase by reference.
-    bool ContainsCaseInsensitive(const std::string& str, const std::string& substr) {
-        if (substr.empty()) {
-            return true;
+const Contact* AddressBook::FindContactById(int contactId) const {
+    for (const auto& contact : contacts_) {
+        if (contact.getId() == contactId) {
+            return &contact;
         }
-        std::string lowerStr, lowerSubstr;
-        for (const char c : str) {
-            lowerStr += std::tolower(c);
-        }
-        for (const char c : substr) {
-            lowerSubstr += std::tolower(c);
-        }
-        return lowerStr.find(lowerSubstr) != std::string::npos;
     }
+    return nullptr;
+}
+
+//  Input Handling: Enables smarter searching by converting uppercase characters in an input string
+//  to lowercase by reference.
+bool AddressBook::ContainsCaseInsensitive(const std::string& str, const std::string& substr) {
+    if (substr.empty()) {
+        return true;
+    }
+    std::string lowerStr, lowerSubstr;
+    for (const char c : str) {
+        lowerStr += std::tolower(c);
+    }
+    for (const char c : substr) {
+        lowerSubstr += std::tolower(c);
+    }
+    return lowerStr.find(lowerSubstr) != std::string::npos;
 }
 
 //  Data Processing: Converts user input strings to the enum type used by the ContactType class.
@@ -56,6 +56,33 @@ ContactType StringToContactType(const std::string& typeStr) {
 }
 
 //============================= CRUD OPERATIONS ====================================
+
+//add contact
+void AddressBook::AddContact(const Contact& contact)
+{
+    contacts_.push_back(contact);
+}
+
+//edit contact
+bool AddressBook::EditContact(int contactId, const Contact& updatedContact)
+{
+    Contact* contact = FindContactById(contactId);
+    if (!contact) return false;
+
+    // Replace fields individually (id would stay  unchanged)
+    contact->setType(updatedContact.getType())
+           .setFirstName(updatedContact.getFirstName())
+           .setLastName(updatedContact.getLastName())
+           .setEmail(updatedContact.getEmail())
+           .setPhone(updatedContact.getPhone())
+           .setAddressLine(updatedContact.getAddressLine())
+           .setCity(updatedContact.getCity())
+           .setState(updatedContact.getState())
+           .setPostalCode(updatedContact.getPostalCode())
+           .setNotes(updatedContact.getNotes());
+    return true;
+}
+
 /*
 ==================== AddContact() ============
 PURPOSE:
@@ -139,7 +166,7 @@ NOTES:
 =====================================================
 */
 bool AddressBook::EditContact(int contactId) {
-    Contact* contact = FindContactById(contacts_, contactId);
+    Contact* contact = FindContactById(contactId);
     if (!contact) {
         return false;
     }
@@ -274,7 +301,7 @@ Returns true if contact found and displayed, false otherwise.
 =====================================================
 */
 bool AddressBook::ViewContact(int contactId) const {
-    const Contact* contact = FindContactById(contacts_, contactId);
+    const Contact* contact = FindContactById(contactId);
 
     if (!contact) {
         return false;
@@ -288,172 +315,198 @@ bool AddressBook::ViewContact(int contactId) const {
 
 //============================= SEARCH OPERATIONS ====================================
 
-/*
-==================== SearchByName() ============
-PURPOSE:
-Searches for contacts by name.
-
-=====================================================
-*/
-void AddressBook::SearchByName(const std::string& query) const {
+std::vector<Contact> AddressBook::SearchByName(const std::string& nameQuery) const
+{
+    /******************************************************************
+    * SUMMARY - Searches contacts by name (case-insensitive, partial match)
+    * PARAM - nameQuery The text to search for in contact names
+    * RETURN - Vector of contacts matching the search criteria
+    * DESIGN - Searches first name, last name, and full name combinations
+    ******************************************************************/
     std::vector<Contact> results;
-
-    for (const auto& contact : contacts_) {
-        if (ContainsCaseInsensitive(contact.getFirstName(), query) ||
-            ContainsCaseInsensitive(contact.getLastName(), query) ||
-            ContainsCaseInsensitive(contact.getFullName(), query)) {
-            results.push_back(contact);
-            }
-    }
-    DisplaySearchResults(results, "Name contains '" + query + "'");
-}
-
-/*
-==================== SearchByEmail() ============
-PURPOSE:
-Searches for contacts by email.
-
-=====================================================
-*/
-void AddressBook::SearchByEmail(const std::string& query) const {
-    std::vector<Contact> results;
-
-    for (const auto& contact : contacts_) {
-        if (ContainsCaseInsensitive(contact.getEmail(), query)) {
+    for (const auto &contact : contacts_)
+    {
+        if (ContainsCaseInsensitive(contact.getFirstName(), nameQuery) ||
+            ContainsCaseInsensitive(contact.getLastName(), nameQuery) ||
+            ContainsCaseInsensitive(contact.getFullName(), nameQuery))
+        {
             results.push_back(contact);
         }
     }
-
-    DisplaySearchResults(results, "Email contains '" + query + "'");
+    return results;
 }
 
-/*
-==================== SearchByPhone() ============
-PURPOSE:
-Searches for contacts by phone number.
 
-=====================================================
-*/
-void AddressBook::SearchByPhone(const std::string& query) const {
+std::vector<Contact> AddressBook::SearchByEmail(const std::string &emailQuery) const
+{
+    /******************************************************************
+    * SUMMARY - Searches contacts by email address (case-insensitive, partial match)
+    * PARAM - emailQuery The text to search for in contact emails
+    * RETURN - Vector of contacts matching the search criteria
+    * DESIGN - Works with matching part of the email for flexible searches
+    ******************************************************************/
     std::vector<Contact> results;
-
-    for (const auto& contact : contacts_) {
-        if (ContainsCaseInsensitive(contact.getPhone(), query)) {
+    for (const auto &contact : contacts_)
+    {
+        if (ContainsCaseInsensitive(contact.getEmail(), emailQuery))
+        {
             results.push_back(contact);
         }
     }
+    return results;
+}
 
-    DisplaySearchResults(results, "Phone contains '" + query + "'");
+
+std::vector<Contact> AddressBook::SearchByPhone(const std::string &phoneQuery) const
+{
+    /******************************************************************
+    * SUMMARY - Searches contacts by phone number (case-insensitive, partial match)
+    * PARAM - phoneQuery The text to search for in contact phone numbers
+    * RETURN - Vector of contacts matching the search criteria
+    * DESIGN - Works with matching part of the phone number for flexible searches
+    ******************************************************************/
+    std::vector<Contact> results;
+    for (const auto &contact : contacts_)
+    {
+        if (ContainsCaseInsensitive(contact.getPhone(), phoneQuery))
+        {
+            results.push_back(contact);
+        }
+    }
+    return results;
 }
 
 //============================= FILTER OPERATIONS ====================================
-/*
-==================== FilterByType() ============
-PURPOSE:
-Filters contacts by exact type match.
 
-=====================================================
-*/
-void AddressBook::FilterByType(const std::string& type) const {
+std::vector<Contact> AddressBook::FilterByType(const std::string& type) const
+{
+    /******************************************************************
+    * SUMMARY - Filters contacts by exact match to type
+    * PARAM - type The contact type to filter by ("Person", "Business", etc.)
+    * RETURN - Vector of contacts of specified type
+    * DESIGN - Exact type matching ensures precise category filtering
+    ******************************************************************/
     std::vector<Contact> results;
-
-    for (const auto& contact : contacts_) {
-        if (Contact::contactTypeToString(contact.getType()) == type) {
+    for (const auto &contact : contacts_)
+    {
+        if (Contact::contactTypeToString(contact.getType()) == type)
+        {
             results.push_back(contact);
         }
     }
-
-    DisplaySearchResults(results, "Type = '" + type + "'");
+    return results;
 }
 
-/*
-==================== FilterByCity() ============
-PURPOSE:
-Filters contacts by city (case-insensitive, partial match).
 
-=====================================================
-*/
-void AddressBook::FilterByCity(const std::string& city) const {
+std::vector<Contact> AddressBook::FilterByCity(const std::string& city) const
+{
+    /******************************************************************
+    * SUMMARY - Filters contacts by city (case-insensitive, partial match)
+    * PARAM - city The city name to filter by
+    * RETURN - Vector of contacts located in the specified city
+    * DESIGN - Case-insensitive matching for city
+    ******************************************************************/
     std::vector<Contact> results;
-
-    for (const auto& contact : contacts_) {
-        if (ContainsCaseInsensitive(contact.getCity(), city)) {
+    for (const auto &contact : contacts_)
+    {
+        if (ContainsCaseInsensitive(contact.getCity(), city))
+        {
             results.push_back(contact);
         }
     }
-
-    DisplaySearchResults(results, "City contains '" + city + "'");
+    return results;
 }
 
-/*
-==================== FilterByTag() ============
-PURPOSE:
-Filters contacts by tag (exact match).
 
-=====================================================
-*/
-void AddressBook::FilterByTag(const std::string& tag) const {
+std::vector<Contact> AddressBook::FilterByTag(const std::string& tag) const
+{
+    /******************************************************************
+    * SUMMARY - Filters contacts by exact match to tag (case-insensitive, partial match)
+    * PARAM - tag The tag name to filter by
+    * RETURN - Vector of contacts with the specified tag
+    * DESIGN - Exact tag matching ensures precise tag consistency
+    ******************************************************************/
     std::vector<Contact> results;
-
-    for (const auto& contact : contacts_) {
-        if (contact.hasTag(tag)) {
+    for (const auto &contact : contacts_)
+    {
+        if (contact.hasTag(tag))
+        {
             results.push_back(contact);
         }
     }
-
-    DisplaySearchResults(results, "Tag = '" + tag + "'");
+    return results;
 }
 
-/*
-==================== DisplaySearchResults() ============
-PURPOSE:
-Displays formatted search/filter results.
+void AddressBook::DisplaySearchResults(const std::vector<Contact>& results, const std::string& searchType) const
+{
+    /******************************************************************
+    * SUMMARY - Shows result counts for focused searches (name, etc.) and broad filters (type, etc.)
+    * PARAM - results - Vector of Contact objects returned from search/filter operations
+    * PARAM - searchType - Descriptor that shows the operation called and parameter entered by user
+    * RETURN - N/A outputs to console
+    * DESIGN - Allows user autonomy to observe the previous call made and decide what to do if they made typos causing undesired output
+    ******************************************************************/
+    // Header
+    std::cout << "\n" << std::string(50, '=') << std::endl;
+    std::cout << "SEARCH RESULTS: " << searchType << std::endl;
+    std::cout << std::string(50, '=') << std::endl;
 
-=====================================================
-*/
-void AddressBook::DisplaySearchResults(const std::vector<Contact>& results, const std::string& searchType) const {
-    std::cout << "\n" << std::string(70, '=') << "\n";
-    std::cout << "SEARCH RESULTS: " << searchType << "\n";
-    std::cout << std::string(70, '=') << "\n";
-    std::cout << "Found " << results.size() << " contact(s)\n";
-    std::cout << std::string(70, '-') << "\n";
+    // Result count
+    std::cout << "Found " << results.size() << " contact(s)" << std::endl;
+    std::cout << std::string(50, '-') << std::endl;
 
-    if (results.empty()) {
-        std::cout << "No contacts found matching search criteria.\n";
+    // Empty results handling
+    if (results.empty())
+    {
+        std::cout << "No contacts found matching search criteria" << std::endl;
         return;
     }
 
-    for (size_t i = 0; i < results.size(); ++i) {
-        const Contact& contact = results[i];
+    // Preview Contacts display
+    for (int i = 0; i < results.size(); ++i)
+    {
+        const Contact &contact = results[i];
 
-        std::cout << "\nContact " << (i + 1) << " of " << results.size() << "\n";
-        std::cout << std::string(40, '-') << "\n";
-        std::cout << "ID: " << contact.getId() << "\n";
-        std::cout << "Name: " << contact.getFullName() << "\n";
-        std::cout << "Type: " << Contact::contactTypeToString(contact.getType()) << "\n";
-        std::cout << "Email: " << contact.getEmail() << "\n";
-        std::cout << "Phone: " << contact.getPhone() << "\n";
-        std::cout << "City: " << contact.getCity() << "\n";
-        std::cout << "State: " << contact.getState() << "\n";
+        // Contact header
+        std::cout << "\n" << std::string(25, '-') << std::endl;
+        std::cout << "Contact " << (i + 1) << " of " << results.size() << std::endl;
+        std::cout << std::string(25, '-') << std::endl;
 
-        if (!contact.getTags().empty()) {
-            std::cout << "Tags: ";
-            for (const auto& tag : contact.getTags()) {
-                std::cout << tag << " | ";
-            }
-            std::cout << "\n";
+        // Contact information
+
+        std::cout << "ID: " << contact.getId() << std::endl;
+        std::cout << "Name: " << contact.getFullName() << std::endl;
+        std::cout << "Type: " << Contact::contactTypeToString(contact.getType()) << std::endl;
+
+        std::cout << "Email: " << contact.getEmail() << std::endl;
+        std::cout << "Phone: " << contact.getPhone() << std::endl;
+
+        // Geographical Content for IRL contacting
+        std::cout << "City: " << contact.getCity() << std::endl;
+        std::cout << "State: " << contact.getState() << std::endl;
+        std::cout << "AddressLine and Postal Code: " << contact.getAddressLine() << " "
+        << contact.getPostalCode() << std::endl;
+
+        // Specific Categorization
+        std::cout << "Tags: ";
+        for (const auto &tag: contact.getTags())
+        {
+            std::cout << tag << "| ";
         }
+        std::cout << std::endl;
 
-        if (!contact.getGroups().empty()) {
-            std::cout << "Groups: ";
-            for (const auto& group : contact.getGroups()) {
-                std::cout << group << " | ";
-            }
-            std::cout << "\n";
+        std::cout << "Groups: ";
+        for (const auto &group: contact.getGroups())
+        {
+            std::cout << group << "| ";
         }
+        std::cout << std::endl;
+
+        // Additional info
+        std::cout << "Notes: " << contact.getNotes() << std::endl;
+
+        std::cout << "\n" << std::string(50, '=') << std::endl;
     }
-
-    std::cout << "\n" << std::string(70, '=') << "\n";
 }
 
 //============================= TAG/GROUP OPERATIONS ====================================
@@ -468,7 +521,7 @@ Returns false if contact not found or tag already exists.
 =====================================================
 */
 bool AddressBook::AddTag(int contactId, const std::string& tag) {
-    Contact* contact = FindContactById(contacts_, contactId);
+    Contact* contact = FindContactById(contactId);
     if (!contact) {
         return false;
     }
@@ -490,7 +543,7 @@ Removes a tag from a specific contact with matching ID.
 =====================================================
 */
 bool AddressBook::RemoveTag(int contactId, const std::string& tag) {
-    Contact* contact = FindContactById(contacts_, contactId);
+    Contact* contact = FindContactById(contactId);
     if (!contact) {
         return false;
     }
@@ -512,7 +565,7 @@ Assigns a contact to a group by ID.
 =====================================================
 */
 bool AddressBook::AssignToGroup(int contactId, const std::string& group) {
-    Contact* contact = FindContactById(contacts_, contactId);
+    Contact* contact = FindContactById(contactId);
     if (!contact) {
         return false;
     }
@@ -534,7 +587,7 @@ Removes a contact from a group by ID.
 =====================================================
 */
 bool AddressBook::RemoveFromGroup(int contactId, const std::string& group) {
-    Contact* contact = FindContactById(contacts_, contactId);
+    Contact* contact = FindContactById(contactId);
     if (!contact) {
         return false;
     }
@@ -561,7 +614,7 @@ NOTES:
 =====================================================
 */
 void AddressBook::LoadFromFile() {
-    std::ifstream file("addressbook.csv");
+    std::ifstream file(DEFAULT_FILENAME);
 
     if (!file.is_open()) {
         std::cout << "No existing file found. Created new file.\n";
@@ -631,7 +684,7 @@ void AddressBook::LoadFromFile() {
     }
 
     file.close();
-    std::cout << "Loaded " << contacts_.size() << " contacts from addressbook.csv\n";
+    std::cout << "Loaded " << contacts_.size() << " contacts from " << DEFAULT_FILENAME << "\n";
 }
 
 /*
@@ -644,7 +697,7 @@ File name is hardcoded as "addressbook.csv".
 =====================================================
 */
 void AddressBook::SaveToFile() const {
-    std::ofstream file("addressbook.csv");
+    std::ofstream file(DEFAULT_FILENAME);
 
     if (!file.is_open()) {
         std::cout << "Error: Could not open file.\n";
@@ -656,7 +709,7 @@ void AddressBook::SaveToFile() const {
     }
 
     file.close();
-    std::cout << "Saved " << contacts_.size() << " contacts to addressbook.csv\n";
+    std::cout << "Saved " << contacts_.size() << " contacts to " << DEFAULT_FILENAME << "\n";
 }
 
 
