@@ -1,9 +1,8 @@
-// MainUI.h
 #ifndef MAIN_UI_H
 #define MAIN_UI_H
 
 #include <string>
-#include "AddressBook.h"
+#include "AddressBookTG.h"
 
 using std::string;
 
@@ -94,7 +93,7 @@ namespace UI
     //======================================================================================
 
     /***************************************************************************************
-    * Main UI loop — loads from file, displays the main menu, and routes user choices.
+    * Main UI loop - loads from file, displays the main menu, and routes user choices.
     ***************************************************************************************/
     void RunMainMenuLoop(AddressBook& addressBook);
 

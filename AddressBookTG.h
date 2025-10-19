@@ -43,4 +43,8 @@ public:
     void ReportMissingInfo() const;
     void ReportCountsByType() const;
     void ReportGroupSummary() const;
+
+private:
+    // Helper method used by search methods
+    void DisplaySearchResults(const std::vector<Contact>& results, const std::string& searchType) const;
 };

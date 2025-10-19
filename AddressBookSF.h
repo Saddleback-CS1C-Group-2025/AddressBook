@@ -21,7 +21,7 @@
 * 
 * OOP DESIGN PRINCIPLES - 
 * Encapsulation: All data private, controlled access through methods
-* Single Responsiblity: Pure Data Management
+* Single Responsibility: Pure Data Management
 * Composition: Manages Contact objects in containers
 * User Autonomy: Methods return data
 ***********************************************************************/
@@ -33,7 +33,7 @@ class AddressBook
     // PRIVATE DATA MEMBERS
     //=================================================================
     std::vector<Contact> contacts; // Contact storage
-    static const std::string DEFAULT_FILENAME; // Default file for pesistence
+    static const std::string DEFAULT_FILENAME; // Default file for persistence
 
     //=================================================================
     // PRIVATE HELPER METHODS
@@ -110,7 +110,7 @@ class AddressBook
     std:: vector<Contact> FilterByType(const std::string& type) const;
 
     /******************************************************************
-    * CITY FILTER - Gets contacts by city using using case-insensitive mtach 
+    * CITY FILTER - Gets contacts by city using case-insensitive match
     * RUBRIC - "Filter by city"
     * LIBRARY - <algorithm> for iterations, uses containsCaseInsensitive helper
     * DESIGN - Case-insensitive matching for city
