@@ -16,6 +16,9 @@ private:
     static bool ContainsCaseInsensitive(const std::string& str, const std::string& substr);
 
 public:
+    // Helper method used by search methods
+    void DisplaySearchResults(const std::vector<Contact>& results, const std::string& searchType) const;
+
     // Basic CRUD operations
     void AddContact();
     void AddContact(const Contact& contact);
@@ -52,6 +55,4 @@ public:
     void ReportCountsByType() const;
     void ReportGroupSummary() const;
 
-    // Helper method used by search methods
-    void DisplaySearchResults(const std::vector<Contact>& results, const std::string& searchType) const;
 };

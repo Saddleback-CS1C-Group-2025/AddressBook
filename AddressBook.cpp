@@ -11,7 +11,7 @@ const std::string AddressBook::DEFAULT_FILENAME = "addressbook.csv";
 
 //============================= HELPER FUNCTIONS ====================================
 
-//helper point3r
+//helper pointer
 Contact* AddressBook::FindContactById(int contactId) {
     for (auto& contact : contacts_) {
         if (contact.getId() == contactId) {
@@ -194,7 +194,7 @@ bool AddressBook::EditContact(int contactId) {
         }
     }
 
-    // Standard logic for editing the remaining fields
+    // Standardized logic for editing the remaining fields
     std::cout << "First Name [" << contact->getFirstName() << "]: ";
     std::getline(std::cin, input);
     if (!input.empty()) contact->setFirstName(input);
@@ -336,7 +336,6 @@ std::vector<Contact> AddressBook::SearchByName(const std::string& nameQuery) con
     return results;
 }
 
-
 std::vector<Contact> AddressBook::SearchByEmail(const std::string &emailQuery) const
 {
     /******************************************************************
@@ -355,7 +354,6 @@ std::vector<Contact> AddressBook::SearchByEmail(const std::string &emailQuery) c
     }
     return results;
 }
-
 
 std::vector<Contact> AddressBook::SearchByPhone(const std::string &phoneQuery) const
 {
@@ -397,7 +395,6 @@ std::vector<Contact> AddressBook::FilterByType(const std::string& type) const
     return results;
 }
 
-
 std::vector<Contact> AddressBook::FilterByCity(const std::string& city) const
 {
     /******************************************************************
@@ -416,7 +413,6 @@ std::vector<Contact> AddressBook::FilterByCity(const std::string& city) const
     }
     return results;
 }
-
 
 std::vector<Contact> AddressBook::FilterByTag(const std::string& tag) const
 {
@@ -645,9 +641,9 @@ void AddressBook::LoadFromFile() {
             continue;
         }
 
+        // Fills fields: id, type, firstName, lastName, email, phone,
+        //               addressLine, city, state, postalCode, notes, groups, tags
         try {
-            // Parse fields: id, type, firstName, lastName, email, phone,
-            //               addressLine, city, state, postalCode, notes, groups, tags
             int id = std::stoi(fields[0]);
             ContactType type = StringToContactType(fields[1]);
 
@@ -725,9 +721,8 @@ Displays the ID/NAME/TYPE of each contacts missing an email or phone number
 as well as the total number of contacts.
 
 NOTES:
-- Uses a for loop that scans the contacts for the length of the contact list
-  and uses a conditional statement on which if getEmail() or getPhone() is empty
-  it outputs the contacts basic information (ID/NAME/TYPE)
+- Uses a for loop that scans the contacts for the length of the contact list.
+  If getEmail() or getPhone() is empty it outputs the contact's ID/NAME/TYPE
 
 =====================================================
 */
@@ -736,14 +731,14 @@ void AddressBook::ReportMissingInfo() const
 
     std::cout << "\n=== Contacts Missing Information ===\n\n";
 
-    //Keeps track of how many contacts have missing info
+    // Keeps track of how many contacts have missing info
     int count = 0;
 
-    //For loop running contact list length
+    // For loop running contact list length
     for (const auto& contact : contacts_) {
 
-        //Conditional statement using empty() to see if retrieved email and phone
-        //for contact is empty and if so it runs.
+        // Conditional statement using empty() to see if retrieved email and phone
+        // for contact is empty and if so it runs.
         if (contact.getEmail().empty() || contact.getPhone().empty())
         {
 
@@ -753,12 +748,12 @@ void AddressBook::ReportMissingInfo() const
                 << " | " << Contact::contactTypeToString(contact.getType())
                 << "\n";
 
-            //Count is then added for the amount of empty contacts
+            // Count is then added for the amount of empty contacts
             count++;
         }
     }
 
-    //Displays the amount of contacts with missing info
+    // Displays the amount of contacts with missing info
     std::cout << "\nTotal: " << count << " contacts missing email or phone\n";
 }
 
@@ -766,7 +761,6 @@ void AddressBook::ReportMissingInfo() const
 ==================== ReportCountsByType() ============
 PURPOSE:
 This function counts how many contacts are categorized for each type.
-
 
 OUTPUT:
 Displays number of contacts per category/type.
@@ -784,29 +778,30 @@ void AddressBook::ReportCountsByType() const
 {
     std::cout << "\n=== Contact Counts by Type ===\n\n";
 
-    //Map also organizes the output alphabetically
+    // Map also organizes the output alphabetically
     std::map<std::string, int> counts;
 
-    //First for loop counts each contact type
+    // First for loop counts each contact type
     for (const auto& contact : contacts_)
     {
 
-        //Converts the enum to string
+        // Converts the enum to string
         std::string type = Contact::contactTypeToString(contact.getType());
 
-        //Increments to next index with type being assigned
+        // Increments to next index with type being assigned
         counts[type]++;
     }
 
-    //Display for loop
+    // Display for loop
     for (const auto& pair : counts)
     {
 
-        //Outputs pair.first (string containing the type) and then pair.second (int containing the count of contacts for the type)
+        // Outputs pair.first (string containing the type)
+        // then pair.second (int containing the count of contacts for the type)
         std::cout << pair.first << ": " << pair.second << "\n";
     }
 
-    //Displays the total amount of contacts overall regardless of type
+    // Displays the total amount of contacts overall regardless of type
     std::cout << "\nTotal contacts: " << contacts_.size() << "\n";
 }
 
@@ -833,36 +828,36 @@ void AddressBook::ReportGroupSummary() const
 {
     std::cout << "\n=== Group Summary ===\n\n";
 
-    //Uses map to sort the groupCounts dealing with duplicates
+    // Uses map to sort the groupCounts dealing with duplicates
     std::map<std::string, int> groupCounts;
 
-    //For loop runs through the contact list
+    // For loop runs through the contact list
     for (const auto& contact : contacts_)
     {
-        //Get reference to contacts groups vector
+        // Get reference to contacts groups vector
         const auto& groups = contact.getGroups();
 
-        //Nested for loop runs through the groups of the contact list
+        // Nested for loop runs through the groups of the contact list
         for (const auto& group : groups)
         {
-            //groupCounts get iterated for that group
+            // groupCounts get iterated for that group
             groupCounts[group]++;
         }
     }
 
 
-    //If the groupCounts is fully empty then there are no groups defined
+    // If the groupCounts is fully empty then there are no groups defined
     if (groupCounts.empty())
     {
-        //Displays that no groups are defined
+        // Displays that no groups are defined
         std::cout << "No groups defined.\n";
         return;
     }
 
-    //For loop displays the groups and the member counts
+    // For loop displays the groups and the member counts
     for (const auto& pair : groupCounts)
     {
-        //Displays pair.first (group name) and then pair.second (group member count)
+        // Displays pair.first (group name) and then pair.second (group member count)
         std::cout << pair.first << ": " << pair.second << " members\n";
     }
 }

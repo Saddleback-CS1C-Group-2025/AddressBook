@@ -25,7 +25,7 @@ enum class ContactType { Person, Business, Vendor, Emergency };
  * A lightweight, extensible data holder for different kinds of
  * address book entries. Designed to be subclassed later (e.g.,
  * BusinessContact, EmergencyContact) if specialized fields are
- * needed. For now it captures common shared attributes.
+ * needed. For now, it captures common shared attributes.
  *
  * RESPONSIBILITIES:
  *   - Store identity (auto-generated id) and basic info.
@@ -153,7 +153,7 @@ public:
     /************************************************************
      * toString
      * ----------------------------------------------------------
-     * PURPOSE : Produce a multi-line human readable summary.
+     * PURPOSE : Produces a multi-line human-readable summary.
      * PARAMS  : includeEmptyFields (IN) - When true, prints labels
      *           even for empty fields (useful for alignment).
      * RETURNS : (string) Formatted description.
