@@ -105,11 +105,12 @@ void AddressBook::AddContact() {
     std::cout << "4) Emergency\n";
     std::cout << "Enter choice (1-4): ";
 
+    const int MAX_CHARS = 50;
     int typeChoice;
     std::cin >> typeChoice;
     std::cin.ignore();
 
-    // Get contact type
+    // User input is converted to enum.
     ContactType type = ContactType::Person;
     switch (typeChoice) {
         case 1: type = ContactType::Person; break;
@@ -125,30 +126,41 @@ void AddressBook::AddContact() {
     std::string firstName, lastName, email, phone;
     std::string addressLine, city, state, postalCode, notes;
 
+    // Contact fields are standardized, entries >50 chars are trimmed, notes can be <=100.
     std::cout << "First Name: ";
     std::getline(std::cin, firstName);
+    if (firstName.length() > MAX_CHARS) firstName = firstName.substr(0, MAX_CHARS);
     std::cout << "Last Name: ";
     std::getline(std::cin, lastName);
+    if (lastName.length() > MAX_CHARS) lastName = lastName.substr(0, MAX_CHARS);
     std::cout << "Email: ";
     std::getline(std::cin, email);
+    if (email.length() > MAX_CHARS) email = email.substr(0, MAX_CHARS);
     std::cout << "Phone: ";
     std::getline(std::cin, phone);
+    if (phone.length() > MAX_CHARS) phone = phone.substr(0, MAX_CHARS);
     std::cout << "Address Line: ";
     std::getline(std::cin, addressLine);
+    if (addressLine.length() > MAX_CHARS) addressLine = addressLine.substr(0, MAX_CHARS);
     std::cout << "City: ";
     std::getline(std::cin, city);
+    if (city.length() > MAX_CHARS) city = city.substr(0, MAX_CHARS);
     std::cout << "State: ";
     std::getline(std::cin, state);
+    if (state.length() > MAX_CHARS) state = state.substr(0, MAX_CHARS);
     std::cout << "Postal Code: ";
     std::getline(std::cin, postalCode);
+    if (postalCode.length() > MAX_CHARS) postalCode = postalCode.substr(0, MAX_CHARS);
     std::cout << "Notes: ";
     std::getline(std::cin, notes);
+    if (notes.length() > MAX_CHARS+50) notes = notes.substr(0, MAX_CHARS+50);
 
-    // Push new contact to end of list
+    // New contacts are pushed to end of list.
     Contact newContact(type, firstName, lastName, email, phone,
                       addressLine, city, state, postalCode, notes);
     contacts_.push_back(newContact);
 
+    // Finally, the contact is given a unique ID.
     std::cout << "\nContact added successfully with ID: " << newContact.getId() << "\n";
 }
 
@@ -277,6 +289,7 @@ Displays a preview list of all contacts showing ID, name, and type.
 void AddressBook::ListAllPreviews() const {
     std::cout << "\n=== All Contacts ===\n";
 
+    // List is empty
     if (contacts_.empty()) {
         std::cout << "No contacts in address book.\n";
         return;
@@ -320,9 +333,9 @@ std::vector<Contact> AddressBook::SearchByName(const std::string& nameQuery) con
 {
     /******************************************************************
     * SUMMARY - Searches contacts by name (case-insensitive, partial match)
-    * PARAM - nameQuery The text to search for in contact names
-    * RETURN - Vector of contacts matching the search criteria
-    * DESIGN - Searches first name, last name, and full name combinations
+    * PARAM   - nameQuery The text to search for in contact names
+    * RETURN  - Vector of contacts matching the search criteria
+    * DESIGN  - Searches first name, last name, and full name combinations
     ******************************************************************/
     std::vector<Contact> results;
     for (const auto &contact : contacts_)
@@ -341,9 +354,9 @@ std::vector<Contact> AddressBook::SearchByEmail(const std::string &emailQuery) c
 {
     /******************************************************************
     * SUMMARY - Searches contacts by email address (case-insensitive, partial match)
-    * PARAM - emailQuery The text to search for in contact emails
-    * RETURN - Vector of contacts matching the search criteria
-    * DESIGN - Works with matching part of the email for flexible searches
+    * PARAM   - emailQuery The text to search for in contact emails
+    * RETURN  - Vector of contacts matching the search criteria
+    * DESIGN  - Works with matching part of the email for flexible searches
     ******************************************************************/
     std::vector<Contact> results;
     for (const auto &contact : contacts_)
@@ -360,9 +373,9 @@ std::vector<Contact> AddressBook::SearchByPhone(const std::string &phoneQuery) c
 {
     /******************************************************************
     * SUMMARY - Searches contacts by phone number (case-insensitive, partial match)
-    * PARAM - phoneQuery The text to search for in contact phone numbers
-    * RETURN - Vector of contacts matching the search criteria
-    * DESIGN - Works with matching part of the phone number for flexible searches
+    * PARAM   - phoneQuery The text to search for in contact phone numbers
+    * RETURN  - Vector of contacts matching the search criteria
+    * DESIGN  - Works with matching part of the phone number for flexible searches
     ******************************************************************/
     std::vector<Contact> results;
     for (const auto &contact : contacts_)
@@ -381,9 +394,9 @@ std::vector<Contact> AddressBook::FilterByType(const std::string& type) const
 {
     /******************************************************************
     * SUMMARY - Filters contacts by exact match to type
-    * PARAM - type The contact type to filter by ("Person", "Business", etc.)
-    * RETURN - Vector of contacts of specified type
-    * DESIGN - Exact type matching ensures precise category filtering
+    * PARAM   - type The contact type to filter by ("Person", "Business", etc.)
+    * RETURN  - Vector of contacts of specified type
+    * DESIGN  - Exact type matching ensures precise category filtering
     ******************************************************************/
     std::vector<Contact> results;
     for (const auto &contact : contacts_)
@@ -400,9 +413,9 @@ std::vector<Contact> AddressBook::FilterByCity(const std::string& city) const
 {
     /******************************************************************
     * SUMMARY - Filters contacts by city (case-insensitive, partial match)
-    * PARAM - city The city name to filter by
-    * RETURN - Vector of contacts located in the specified city
-    * DESIGN - Case-insensitive matching for city
+    * PARAM   - city The city name to filter by
+    * RETURN  - Vector of contacts located in the specified city
+    * DESIGN  - Case-insensitive matching for city
     ******************************************************************/
     std::vector<Contact> results;
     for (const auto &contact : contacts_)
@@ -419,9 +432,9 @@ std::vector<Contact> AddressBook::FilterByTag(const std::string& tag) const
 {
     /******************************************************************
     * SUMMARY - Filters contacts by exact match to tag (case-insensitive, partial match)
-    * PARAM - tag The tag name to filter by
-    * RETURN - Vector of contacts with the specified tag
-    * DESIGN - Exact tag matching ensures precise tag consistency
+    * PARAM   - tag The tag name to filter by
+    * RETURN  - Vector of contacts with the specified tag
+    * DESIGN  - Exact tag matching ensures precise tag consistency
     ******************************************************************/
     std::vector<Contact> results;
     for (const auto &contact : contacts_)
@@ -438,10 +451,10 @@ void AddressBook::DisplaySearchResults(const std::vector<Contact>& results, cons
 {
     /******************************************************************
     * SUMMARY - Shows result counts for focused searches (name, etc.) and broad filters (type, etc.)
-    * PARAM - results - Vector of Contact objects returned from search/filter operations
-    * PARAM - searchType - Descriptor that shows the operation called and parameter entered by user
-    * RETURN - N/A outputs to console
-    * DESIGN - Allows user autonomy to observe the previous call made and decide what to do if they made typos causing undesired output
+    * PARAM   - results - Vector of Contact objects returned from search/filter operations
+    * PARAM   - searchType - Descriptor that shows the operation called and parameter entered by user
+    * RETURN  - N/A outputs to console
+    * DESIGN  - Allows user autonomy to observe the previous call made and decide what to do if they made typos
     ******************************************************************/
     // Header
     std::cout << "\n" << std::string(50, '=') << std::endl;
@@ -470,7 +483,6 @@ void AddressBook::DisplaySearchResults(const std::vector<Contact>& results, cons
         std::cout << std::string(25, '-') << std::endl;
 
         // Contact information
-
         std::cout << "ID: " << contact.getId() << std::endl;
         std::cout << "Name: " << contact.getFullName() << std::endl;
         std::cout << "Type: " << Contact::contactTypeToString(contact.getType()) << std::endl;
@@ -541,6 +553,8 @@ Removes a tag from a specific contact with matching ID.
 */
 bool AddressBook::RemoveTag(int contactId, const std::string& tag) {
     Contact* contact = FindContactById(contactId);
+
+    // Contact list is empty
     if (!contact) {
         return false;
     }
@@ -550,7 +564,6 @@ bool AddressBook::RemoveTag(int contactId, const std::string& tag) {
     } else {
         std::cout << "Tag not found.\n";
     }
-
     return success;
 }
 
@@ -613,6 +626,7 @@ NOTES:
 void AddressBook::LoadFromFile() {
     std::ifstream file(DEFAULT_FILENAME);
 
+    // Will always run for a new user
     if (!file.is_open()) {
         std::cout << "No existing file found. Created new file.\n";
         return;
