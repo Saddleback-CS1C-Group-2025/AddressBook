@@ -46,6 +46,7 @@ public:
      * RETURNS : (object) New Contact instance.
      ***********************************************************/
     Contact();
+
     /************************************************************
      * Contact (value ctor)
      * ----------------------------------------------------------
@@ -73,6 +74,7 @@ public:
         std::string state = {},        // IN - state / region component
         std::string postalCode = {},   // IN - postal / ZIP code
         std::string notes = {});       // IN - free-form notes
+
     /************************************************************
      * ~Contact (virtual dtor)
      * ----------------------------------------------------------
@@ -139,6 +141,7 @@ public:
     bool addGroup(const std::string &group);
     bool removeGroup(const std::string &group);
     bool hasGroup(const std::string &group) const;
+
     /************************************************************
      * addTag / removeTag / hasTag
      * ----------------------------------------------------------
@@ -150,6 +153,7 @@ public:
     bool addTag(const std::string &tag);
     bool removeTag(const std::string &tag);
     bool hasTag(const std::string &tag) const;
+
     /************************************************************
      * toString
      * ----------------------------------------------------------
@@ -158,7 +162,7 @@ public:
      *           even for empty fields (useful for alignment).
      * RETURNS : (string) Formatted description.
      ***********************************************************/
-    virtual std::string toString(bool includeEmptyFields = false) const; // IN - includeEmptyFields: print labels for empty values
+    virtual std::string toString(bool includeEmptyFields = false) const;
 
     /************************************************************
      * toCSV
