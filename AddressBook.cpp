@@ -261,6 +261,7 @@ bool AddressBook::DeleteContact(int contactId) {
 
     // Contact found
     contacts_.erase(contactSearch);
+
     std::cout << "Contact deleted successfully.\n";
     return true;
 }
@@ -633,12 +634,6 @@ void AddressBook::LoadFromFile() {
         // Parse CSV line
         while (std::getline(ss, token, ',')) {
             fields.push_back(token);
-        }
-
-        // Need at least 13 fields (id through tags)
-        if (fields.size() < 13) {
-            std::cout << "Warning: Skipping malformed line " << lineCount << "\n";
-            continue;
         }
 
         // Fills fields: id, type, firstName, lastName, email, phone,
