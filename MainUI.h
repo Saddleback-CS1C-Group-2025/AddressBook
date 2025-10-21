@@ -2,7 +2,7 @@
 #define MAIN_UI_H
 
 #include <string>
-#include "AddressBookTG.h"
+#include "AddressBook.h"
 
 using std::string;
 
@@ -89,7 +89,7 @@ namespace UI
 
 
     //======================================================================================
-    // MAIN MENU LOOP
+    // MAIN MENU
     //======================================================================================
 
     /***************************************************************************************
@@ -98,6 +98,6 @@ namespace UI
     void RunMainMenuLoop(AddressBook& addressBook);
 
 
-} // namespace UI
+}
 
-#endif // MAIN_UI_H
+#endif

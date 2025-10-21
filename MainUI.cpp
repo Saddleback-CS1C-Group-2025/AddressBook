@@ -55,7 +55,6 @@ namespace
     }
 }
 
-
 namespace UI
 {
     // =====================================================================================
@@ -208,7 +207,6 @@ namespace UI
     }
 
     using namespace CONSTANTS;
-
 
     // =====================================================================================
     // INPUT / UI HELPERS
@@ -392,7 +390,6 @@ namespace UI
                     break;
             }
         }
-
         return type;
     }
 
@@ -400,7 +397,6 @@ namespace UI
     {
         return ReadIntegerAny(label);
     }
-
 
     // =====================================================================================
     // SUBMENU: VIEW
@@ -445,7 +441,6 @@ namespace UI
         }
     }
 
-
     // =====================================================================================
     // SUBMENU: SEARCH / FILTER
     // =====================================================================================
@@ -478,42 +473,47 @@ namespace UI
             else if (selectedOption == SEARCH_CHOICE_BY_NAME)
             {
                 query = ReadNonEmptyLine(PROMPT_NAME_CONTAINS);
-                addressBook.SearchByName(query);
+                std::vector<Contact> results = addressBook.SearchByName(query);
+                addressBook.DisplaySearchResults(results, "Name contains '" + query + "'");
                 PauseForUser();
             }
             else if (selectedOption == SEARCH_CHOICE_BY_EMAIL)
             {
                 query = ReadNonEmptyLine(PROMPT_EMAIL_CONTAINS);
-                addressBook.SearchByEmail(query);
+                std::vector<Contact> results = addressBook.SearchByEmail(query);
+                addressBook.DisplaySearchResults(results, "Email contains '" + query + "'");
                 PauseForUser();
             }
             else if (selectedOption == SEARCH_CHOICE_BY_PHONE)
             {
                 query = ReadNonEmptyLine(PROMPT_PHONE_CONTAINS);
-                addressBook.SearchByPhone(query);
+                std::vector<Contact> results = addressBook.SearchByPhone(query);
+                addressBook.DisplaySearchResults(results, "Phone contains '" + query + "'");
                 PauseForUser();
             }
             else if (selectedOption == SEARCH_CHOICE_BY_TYPE)
             {
                 query = PromptContactType();
-                addressBook.FilterByType(query);
+                std::vector<Contact> results = addressBook.FilterByType(query);
+                addressBook.DisplaySearchResults(results, "Type = '" + query + "'");
                 PauseForUser();
             }
             else if (selectedOption == SEARCH_CHOICE_BY_CITY)
             {
                 query = ReadNonEmptyLine(PROMPT_CITY_VALUE);
-                addressBook.FilterByCity(query);
+                std::vector<Contact> results = addressBook.FilterByCity(query);
+                addressBook.DisplaySearchResults(results, "City contains '" + query + "'");
                 PauseForUser();
             }
             else if (selectedOption == SEARCH_CHOICE_BY_TAG)
             {
                 query = ReadNonEmptyLine(PROMPT_TAG_VALUE);
-                addressBook.FilterByTag(query);
+                std::vector<Contact> results = addressBook.FilterByTag(query);
+                addressBook.DisplaySearchResults(results, "Tag = '" + query + "'");
                 PauseForUser();
             }
         }
     }
-
 
     // =====================================================================================
     // SUBMENU: REPORTS
@@ -557,7 +557,6 @@ namespace UI
             }
         }
     }
-
 
     // =====================================================================================
     // SUBMENU: TAGS / GROUPS
@@ -632,7 +631,6 @@ namespace UI
             }
         }
     }
-
 
     // =====================================================================================
     // MAIN UI LOOP

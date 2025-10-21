@@ -16,6 +16,7 @@ This program manages contact information with features for searching, filtering,
 ## Build Instructions
 
 You can compile and run this project using any C++17 compiler.
+Also contains a CMake configuration.
 
 ### Windows (Command Prompt or PowerShell)
 ```powershell
